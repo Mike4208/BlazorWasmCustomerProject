@@ -1,0 +1,102 @@
+﻿@page "/Customers"
+@using BlazorWasmCustomerProject.Shared.Models;
+@using BlazorWasmCustomerProject.Shared;
+@using BlazorWasmCustomerProject.Client.Services.CustomerService
+@inject ICustomerService CustomerService
+@inject NavigationManager NavigationManager
+@inject HttpClient http
+@using System.Text.Json
+
+<PageTitle>Customers</PageTitle>
+<h3>Customers</h3>
+
+<Pagination TotalPageQuantiy="totalPageQuantiy" CurrentPage="currentPage" Radius="2" selectedPage="selectedPage"></Pagination>
+
+<table class="table">
+    <thead>
+        <tr>
+        <tr>
+            <th>Id</th>
+            <th>Company</th>
+            <th>Contact</th>
+            <th>Address</th>
+            <th>City</th>
+            <th>Region</th>
+            <th>Postal code</th>
+            <th>Country</th>
+            <th>Phone number</th>
+        </tr>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var customer in CustomerList)
+        {
+            <tr>
+                <td>@customer.Id</td>
+                <td>@customer.CompanyName</td>
+                <td>@customer.ContactName</td>
+                <td>@customer.Address</td>
+                <td>@customer.City</td>
+                <td>@customer.Region</td>
+                <td>@customer.PostalCode</td>
+                <td>@customer.Country</td>
+                <td>@customer.Phone</td>
+                <td>
+                    <button class="btn btn-primary" @onclick="() => ShowCustomer(customer.Id)"><i class="oi oi-pencil"></i></button>    
+                </td>
+
+            </tr>
+        }
+    </tbody>
+
+</table>
+
+<button class="btn btn-primary" @onclick="CreateNewCustomer">Create New Customer</button>
+
+@code {
+    List<Customer> CustomerList = new List<Customer>();
+    private int totalPageQuantiy;
+    private int currentPage = 1;
+
+    private async Task selectedPage(int page)
+    {
+        currentPage = page;
+        await loadCustomers(page);
+    }
+
+    protected override async Task OnInitializedAsync() 
+    { 
+        await loadCustomers(); 
+    }
+
+    async Task loadCustomers(int page = 1, int quantityPerPage = 3)
+    {
+        await CustomerService.getCustomers(page, quantityPerPage);
+        var httpResponse = CustomerService.HttpResponse;
+
+       
+
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            totalPageQuantiy = int.Parse(httpResponse.Headers.GetValues("pagesQuantity").FirstOrDefault());
+            var response = await httpResponse.Content.ReadAsStringAsync();
+            CustomerList = JsonSerializer.Deserialize<List<Customer>>(response,
+                new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
+        }
+
+        else
+        {
+            // handle error    
+        }
+    }
+
+    protected void ShowCustomer(int? id)
+    {
+        NavigationManager.NavigateTo($"singlecustomer/{id}");
+    }
+
+    protected void CreateNewCustomer()
+    {
+        NavigationManager.NavigateTo("/singlecustomer");
+    }
+}

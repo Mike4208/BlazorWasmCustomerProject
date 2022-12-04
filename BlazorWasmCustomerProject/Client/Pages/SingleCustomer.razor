@@ -1,0 +1,105 @@
+﻿@page "/singlecustomer"
+@page "/singlecustomer/{id:int}"
+@using BlazorWasmCustomerProject.Client.Services.CustomerService;
+@using BlazorWasmCustomerProject.Shared;
+@using BlazorWasmCustomerProject.Shared.Models;
+
+@inject ICustomerService CustomerService
+
+@if (Id == null)
+{
+    <PageTitle>Create a new Customer</PageTitle>
+    <h3>Create a new Customer</h3>
+}
+else
+{
+    <PageTitle>Edit @customer.ContactName </PageTitle>
+    <h3>Edit @customer.ContactName</h3>
+}
+
+<EditForm Model="customer" OnSubmit="HandleSubmit">
+    <div>
+        <label for="contactName">Company</label>
+        <InputText id="companyName" @bind-Value="customer.CompanyName" class="form-control"/>
+    </div>
+    <div>
+        <label for="contactName">contact</label>
+        <InputText id="contactName" @bind-Value="customer.ContactName" class="form-control"/>
+    </div>
+    <div>
+        <label for="address">Address</label>
+        <InputText id="address" @bind-Value="customer.Address" class="form-control"/>
+    </div>
+    <div>
+        <label for="city">City</label>
+        <InputText id="city" @bind-Value="customer.City" class="form-control"/>
+    </div>
+    <div>
+        <label for="region">Region</label>
+        <InputText id="Region" @bind-Value="customer.Region" class="form-control"/>
+    </div>
+    <div>
+        <label for="postalCode">Postal Code</label>
+        <InputText id="PostalCode" @bind-Value="customer.PostalCode" class="form-control" />
+    </div>
+    <div>
+        <label for="country">Country</label>
+        <InputText id="country" @bind-Value="customer.Country" class="form-control"/>
+    </div>
+    <div>
+        <label for="phone">Phone</label>
+        <InputText id="Phone" @bind-Value="customer.Phone" class="form-control" />
+    </div>
+    <br />
+    <button type="submit" class="btn btn-primary">@btnText</button>
+    <button type="button" class="btn btn-danger" @onclick="DelteCustomer" hidden="@isNewCustomer">Delete</button>
+</EditForm>
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    string btnText = string.Empty;
+
+    bool isNewCustomer;
+
+    Customer customer = new Customer { };
+
+    protected override async Task OnInitializedAsync()
+    {
+        btnText = Id == null ? "Save new Customer" : "Update Customer";
+        isNewCustomer = Id == null ? true : false;
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == null)
+        {
+            
+        }
+        else
+        {
+            customer = await CustomerService.GetSingleCustomer(Id);
+        }
+
+    }
+
+    async Task HandleSubmit()
+    {
+        if(Id == null)
+        {
+            await CustomerService.CreateCustomer(customer);
+        }
+        else
+        {
+            await CustomerService.UpdateCustomer(customer);
+        }
+
+    }
+
+    async Task DelteCustomer()
+    {
+        await CustomerService.DeleteCustomer(customer.Id);
+
+    }
+}
