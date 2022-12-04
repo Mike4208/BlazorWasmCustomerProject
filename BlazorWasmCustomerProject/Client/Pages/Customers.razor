@@ -74,8 +74,6 @@
         await CustomerService.getCustomers(page, quantityPerPage);
         var httpResponse = CustomerService.HttpResponse;
 
-       
-
         if (httpResponse.IsSuccessStatusCode)
         {
             totalPageQuantiy = int.Parse(httpResponse.Headers.GetValues("pagesQuantity").FirstOrDefault());
@@ -83,7 +81,6 @@
             CustomerList = JsonSerializer.Deserialize<List<Customer>>(response,
                 new JsonSerializerOptions() { PropertyNameCaseInsensitive = true });
         }
-
         else
         {
             // handle error    
