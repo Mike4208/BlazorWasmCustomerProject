@@ -46,7 +46,7 @@
         var previousPage = CurrentPage - 1;
         links.Add(new LinkModel(previousPage, isPreviusPageLinkEnabled, "Previus"));
 
-        for (int i = 1; i < TotalPageQuantiy; i++)
+        for (int i = 1; i <= TotalPageQuantiy; i++)
         {
             if(i >= CurrentPage - Radius && i <= CurrentPage + Radius)
             {
