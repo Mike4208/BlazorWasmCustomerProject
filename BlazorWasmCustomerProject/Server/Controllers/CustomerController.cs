@@ -21,10 +21,6 @@ namespace BlazorWasmCustomerProject.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<List<Customer>>> GetCustomers([FromQuery]Pagination pagination)
         {
-            //var customers = await _context.Customers.ToListAsync();
-
-            //return Ok(customers);
-            
             var queryable = _context.Customers.AsQueryable();
             await HttpContext.InsertPaginationParameterInResponse(queryable, pagination.QuantityPerPage);
             return await queryable.Paginate(pagination).ToListAsync();
