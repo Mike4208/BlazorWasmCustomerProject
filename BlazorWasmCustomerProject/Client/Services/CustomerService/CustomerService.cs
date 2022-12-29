@@ -36,14 +36,7 @@ namespace BlazorWasmCustomerProject.Client.Services.CustomerService
 
         public async Task getCustomers(int page, int quantityPerPage)
         {
-            //var results = await _http.GetFromJsonAsync<List<Customer>>("api/customer");
-            //if (results != null)
-            //{
-            //    Customers = results;
-            //}
-
             HttpResponse = await _http.GetAsync($"api/customer?page={page}&quantityPerPage={quantityPerPage}");
-
         }
 
         public async Task<Customer> GetSingleCustomer(int? id)
